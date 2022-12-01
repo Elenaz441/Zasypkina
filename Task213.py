@@ -13,10 +13,12 @@ import pdfkit
 
 
 class Report:
-    """Класс для формирования отчётов и графиков.
+    """
+    Класс для формирования отчётов и графиков.
     """
     def generate_excel(self, name_vac: str, statistic: List[Dict[str, str]]) -> None:
-        """Генерирует Excel-таблицу.
+        """
+        Генерирует Excel-таблицу.
 
         Args:
             name_vac (str): Название вакансии
@@ -60,7 +62,8 @@ class Report:
         wb.save('report.xlsx')
 
     def generate_image(self, name_vac: str, statistic: List[Dict[str, str]]) -> None:
-        """Генерирует файл png с графиками по вакансиям.
+        """
+        Генерирует файл png с графиками по вакансиям.
 
         Args:
             name_vac (str): Название вакансии
@@ -103,7 +106,8 @@ class Report:
         plt.savefig('graph.png')
 
     def generate_pdf(self, name_vac: str) -> None:
-        """Генерирует файл pdf, где используются данные из прошлых методов.
+        """
+        Генерирует файл pdf, где используются данные из прошлых методов.
 
         Args:
             name_vac (str): Название вакансии
@@ -126,34 +130,43 @@ class Report:
 
 
 class DataSet:
-    """Класс для формирования списка вакансий.
+    """
+    Класс для формирования списка вакансий.
+
     Attributes:
         file_name (str): Название файла.
         vacancies_objects (List[Vacancy]): Сформированный список вакансий.
 
     """
     def __init__(self, file_name: str) -> None:
-        """Инициализирует объект DataSet.
+        """
+        Инициализирует объект DataSet.
+
         Args:
             file_name (str): Имя файла.
         """
         self.file_name = file_name
         self.vacancies_objects = [Vacancy(vac) for vac in self.csv_filer(*self.csv_reader(file_name))]
 
-    def __clean_string(self, raw_html: str) -> str:
-        """Очищает строку от HTML кода
+    def clean_string(self, raw_html: str) -> str:
+        """
+        Очищает строку от HTML кода
 
         Args:
             raw_html (str): Строка, которую нужно очистить
 
         Returns:
             str: Очищенная строка.
+
+        >>> DataSet('vacancies.csv').clean_string('<p>Группа компаний «МИАКОМ»</p>')
+        'Группа компаний «МИАКОМ»'
         """
         result = re.sub("<.*?>", '', raw_html)
         return result if '\n' in raw_html else " ".join(result.split())
 
     def csv_reader(self, file_name: str) -> Tuple[List[str], List[List[str]]]:
-        """Считывает данные из файла
+        """
+        Считывает данные из файла
 
         Args:
             file_name (str): Название файла.
@@ -166,7 +179,8 @@ class DataSet:
         return data_base[0], data_base[1:]
 
     def csv_filer(self, list_naming: List[str], reader: List[List[str]]) -> List[Dict[str, str]]:
-        """Преобразует данные в список словарей, где словарь содержит информацию об одной вакансии.
+        """
+        Преобразует данные в список словарей, где словарь содержит информацию об одной вакансии.
 
         Args:
             list_naming (List[str]): Поля вакансии
@@ -176,11 +190,12 @@ class DataSet:
             List[Dict[str, str]]: Список словарей.
         """
         new_vacans_list = list(filter(lambda vac: (len(vac) == len(list_naming) and vac.count('') == 0), reader))
-        return [dict(zip(list_naming, map(self.__clean_string, vac))) for vac in new_vacans_list]
+        return [dict(zip(list_naming, map(self.clean_string, vac))) for vac in new_vacans_list]
 
 
 class Vacancy:
-    """Класс для представления вакансии
+    """
+    Класс для представления вакансии
     
     Attributes:
         name (string): Название вакансии
@@ -194,25 +209,27 @@ class Vacancy:
         published_at (str): Дата публикации вакансии
     """
     def __init__(self, dict_vac: Dict[str, str]):
-        """Инициализирует объект Vacancy, проверяя наличие некоторых полей для вакансии
+        """
+        Инициализирует объект Vacancy, проверяя наличие некоторых полей для вакансии
 
         Args: dict_vac (Dict[str, str]): Словарь, хранящий информацию о вакансии. Ключи - это названия полей,
         значения - информация о вакансии по соответствующему полю.
         """
         self.name = dict_vac['name']
-        self.description = None if 'description' not in dict_vac.keys() else dict_vac['description']
-        self.key_skills = None if 'key_skills' not in dict_vac.keys() else dict_vac['key_skills'].split('\n')
-        self.experience_id = None if 'experience_id' not in dict_vac.keys() else dict_vac['experience_id']
-        self.premium = None if 'premium' not in dict_vac.keys() else dict_vac['premium']
-        self.employer_name = None if 'employer_name' not in dict_vac.keys() else dict_vac['employer_name']
-        salary_gross = None if 'salary_gross' not in dict_vac.keys() else dict_vac['salary_gross']
+        self.description = 'Нет данных' if 'description' not in dict_vac.keys() else dict_vac['description']
+        self.key_skills = 'Нет данных' if 'key_skills' not in dict_vac.keys() else dict_vac['key_skills'].split('\n')
+        self.experience_id = 'Нет данных' if 'experience_id' not in dict_vac.keys() else dict_vac['experience_id']
+        self.premium = 'Нет данных' if 'premium' not in dict_vac.keys() else dict_vac['premium']
+        self.employer_name = 'Нет данных' if 'employer_name' not in dict_vac.keys() else dict_vac['employer_name']
+        salary_gross = 'Нет данных' if 'salary_gross' not in dict_vac.keys() else dict_vac['salary_gross']
         self.salary = Salary(dict_vac['salary_from'], dict_vac['salary_to'], salary_gross, dict_vac['salary_currency'])
         self.area_name = dict_vac['area_name']
         self.published_at = dict_vac['published_at']
 
 
 class Salary:
-    """Класс для представления зарплаты.
+    """
+    Класс для представления зарплаты.
 
     Attributes:
         salary_from (str): Нижняя граница зарплаты
@@ -222,7 +239,8 @@ class Salary:
 
     """
     def __init__(self, salary_from, salary_to, salary_gross, salary_currency):
-        """Инициализирует объект Salary
+        """
+        Инициализирует объект Salary
         Args:
             salary_from (str): Нижняя граница зарплаты
             salary_to (str): Верхняя граница зарплаты
@@ -235,19 +253,30 @@ class Salary:
         self.salary_currency = salary_currency
 
     def to_RUB(self, salary: float) -> float:
-        """Вычисляет зарплату в рублях, при помощи словаря - currency_to_rub.
+        """
+        Вычисляет зарплату в рублях, при помощи словаря - currency_to_rub.
 
         Args:
             salary (float): Зарплата в другой валюте.
 
         Returns:
             float: Зарплата в рублях.
+
+        >>> Salary('10', '1000', 'true', 'EUR').to_RUB(1000.0)
+        59900.0
+        >>> Salary('10', '1000', 'true', 'RUR').to_RUB(1000)
+        1000.0
+        >>> Salary('10', '1000', 'true', 'QWE').to_RUB(1000.0)
+        Traceback (most recent call last):
+        ...
+        KeyError: 'QWE'
         """
-        return salary * currency_to_rub[self.salary_currency]
+        return float(salary * currency_to_rub[self.salary_currency])
 
 
 class InputConnect:
-    """Формирование таблицы PrettyTable с удобным отображением информации о вакансии.
+    """
+    Формирование таблицы PrettyTable с удобным отображением информации о вакансии.
 
     Attributes:
         filter_param (str or List[str]): Параметр фильтрации
@@ -257,7 +286,8 @@ class InputConnect:
         columns (str or List[str]): Название выводимых колонок
     """
     def __init__(self, filter_param, sort_param, reversed_sort, interval, columns):
-        """Инициализирует объект InputConnect
+        """
+        Инициализирует объект InputConnect
 
         Args:
             filter_param (str): Параметр фильтрации
@@ -273,7 +303,8 @@ class InputConnect:
         self.columns = columns
 
     def check_parameters(self) -> None:
-        """Проверка параметров на корректность ввода.
+        """
+        Проверка параметров на корректность ввода.
         """
         if ': ' not in self.filter_param and self.filter_param != '':
             exit_from_file('Формат ввода некорректен')
@@ -290,7 +321,8 @@ class InputConnect:
             self.columns.insert(0, '№')
 
     def formatter(self, vacancy: Vacancy) -> List[Any]:
-        """Осуществляет форматирование необходимых полей.
+        """
+        Осуществляет форматирование необходимых полей.
 
         Args:
             vacancy (Vacancy): Вакансия.
@@ -298,8 +330,9 @@ class InputConnect:
         Returns:
             List[Any]: Список отформатированных полей.
         """
-        def change_salary(salary: Salary):
-            """Форматирует зарплату к нужному формату.
+        def change_salary(salary: Salary) -> str:
+            """
+            Форматирует зарплату к нужному формату.
 
             Args:
                 salary (Salary): Информация о зарплате.
@@ -309,15 +342,17 @@ class InputConnect:
             """
             salary_from = int(float(salary.salary_from))
             salary_to = int(float(salary.salary_to))
-            if salary_from > 1000:
+            if salary_from >= 1000:
                 salary_from = f'{salary_from // 1000} {str(salary_from)[-3:]}'
+            if salary_to >= 1000:
                 salary_to = f'{salary_to // 1000} {str(salary_to)[-3:]}'
             info_gross = 'Без вычета налогов' if translation[salary.salary_gross] == 'Да' else 'С вычетом налогов'
             result_salary = f'{salary_from} - {salary_to} ({translation[salary.salary_currency]}) ({info_gross})'
             return result_salary
 
         def change_date(date_vac: str) -> str:
-            """Форматирует дату публикации к нужному формату.
+            """
+            Форматирует дату публикации к нужному формату.
 
             Args:
                 date_vac (str): Дата публикации.
@@ -332,7 +367,8 @@ class InputConnect:
                 change_date(vacancy.published_at)]
 
     def data_filter(self, list_vacancies: List[Vacancy], parameter: List[str]) -> List[Vacancy]:
-        """Фильтрует список вакансий по введённым параметрам.
+        """
+        Фильтрует список вакансий по введённым параметрам.
 
         Args:
             list_vacancies (List[Vacancy]): Список вакансий.
@@ -367,11 +403,12 @@ class InputConnect:
         return list_vacancies
 
     def data_sort(self, list_vacancies: List[Vacancy], param: str, is_reverse: bool) -> List[Vacancy]:
-        """Сортирует список вакансий по введённым параметрам.
+        """
+        Сортирует список вакансий по введённым параметрам.
 
         Args:
             list_vacancies (List[Vacancy]): Список вакансий.
-            param (str): Параметры фильтрации.
+            param (str): Параметр сортировки.
             is_reverse (bool): Параметр обратной сортировки.
 
         Returns:
@@ -393,7 +430,9 @@ class InputConnect:
         return list_vacancies
 
     def print_vacancies(self, list_vacancies: List[Vacancy]) -> None:
-        """Выводит информацию о вакансии в таблицу PrettyTable
+        """
+        Выводит информацию о вакансии в таблицу PrettyTable
+
         Args:
             list_vacancies (List[Vacancy]): Список вакансий.
         """
@@ -425,12 +464,14 @@ class InputConnect:
 
 
 def get_salary_level(list_vacancies: List[Vacancy], field: str, name_vacancy: str = '') -> Dict[str, str]:
-    """Формирует статистики, связанные с зарплатами
+    """
+    Формирует статистики, связанные с зарплатами
 
     Args:
         list_vacancies (List[Vacancy]): Список вакансий
         field (str): Поле вакансии
         name_vacancy (str): Название вакансии (если его ввели)
+
     Returns:
         Dict[str, str]: Статистика связанная с зарплатой
     """
@@ -446,12 +487,14 @@ def get_salary_level(list_vacancies: List[Vacancy], field: str, name_vacancy: st
 
 
 def get_count_vacancies(list_vacancies: List[Vacancy], field: str, name_vacancy: str = '') -> Dict[str, str]:
-    """Формирует статистики, связанные с количеством вакансий
+    """
+    Формирует статистики, связанные с количеством вакансий
 
     Args:
         list_vacancies (List[Vacancy]): Список вакансий
         field (str): Поле вакансии
         name_vacancy (str): Название вакансии (если его ввели)
+
     Returns:
         Dict[str, str]: Статистика, связанная с количеством вакансий
     """
@@ -491,6 +534,7 @@ translation = {"name": "Название",
                "area_name": "Название региона",
                "published_at": "Дата публикации вакансии",
                "Оклад": "Оклад",
+               "Нет данных": "Нет данных",
                "True": "Да",
                "TRUE": "Да",
                "False": "Нет",
@@ -528,7 +572,8 @@ rang_experience_id = {"noExperience": 0,
 
 
 def change_data(date_vac) -> str:
-    """Форматирует дату публикации к нужному формату.
+    """
+    Форматирует дату публикации к нужному формату.
 
     Args:
         date_vac (str): Дата публикации.
@@ -540,7 +585,8 @@ def change_data(date_vac) -> str:
 
 
 def exit_from_file(message: str):
-    """Метод для выхода из программы.
+    """
+    Метод для выхода из программы.
 
     Args:
         message (str): Сообщение при выходе из программы
@@ -550,7 +596,8 @@ def exit_from_file(message: str):
 
 
 def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = False, slice: int = 0) -> Dict[Any, Any]:
-    """Приводит статистику к нужному виду (чтобы года шли )
+    """
+    Приводит статистику к нужному виду (чтобы года шли )
 
     Args:
         result_list (Dict[Any, Any]): Словарь со статистикой
@@ -592,7 +639,7 @@ if type_output == 'Статистика':
     rp.generate_excel(vacancy_name, list_statistic)
     rp.generate_image(vacancy_name, list_statistic)
     rp.generate_pdf(vacancy_name)
-elif 'Вакансии':
+elif type_output == 'Вакансии':
     parameter = input('Введите параметр фильтрации: ')
     sorting_param = input('Введите параметр сортировки: ')
     is_reversed_sort = input('Обратный порядок сортировки (Да / Нет): ')
