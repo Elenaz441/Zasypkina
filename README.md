@@ -100,7 +100,7 @@ def change_date(date_vac: str) -> str:
             index1 = raw_html.find('<')
             index2 = raw_html.find('>')
             raw_html = raw_html[:index1] + raw_html[index2 + 1:]
-        return raw_html if '\n' in raw_html else " ".join(result.split())
+        return raw_html if '\n' in raw_html else " ".join(raw_html.split())
 ```
 Однако эта реализация отработала примерно также как и прошлая:
 ![image](https://user-images.githubusercontent.com/102030455/206182022-2a099910-10bb-4cc4-bd87-e7d073de961b.png)
