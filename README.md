@@ -1,5 +1,7 @@
 # Zasypkina
 
+### Задание 2.3.2
+
 Фото unit тестов (все пройдены):
 ![image](https://user-images.githubusercontent.com/102030455/205136537-b30ab401-24c0-460f-a017-a1eb62dc6094.png)
 
@@ -66,3 +68,41 @@ def change_date(date_vac: str) -> str:
 
 Но я всё равно решила оставить старую реализацию (с помощью datetime.strpftime), так как этот код наиболее понятен и читабелен.
 
+Ещё одним трудозатратным методом в моей программе является clean_string:
+```py
+    def clean_string(self, raw_html: str) -> str:
+        """
+        Очищает строку от HTML кода
+
+        Args:
+            raw_html (str): Строка, которую нужно очистить
+
+        Returns:
+            str: Очищенная строка.
+        """
+        result = re.sub("<.*?>", '', raw_html)
+        return result if '\n' in raw_html else " ".join(result.split())
+```
+
+Я попыталась переделать этот метод таким образом:
+```py
+    def clean_string(self, raw_html) -> str:
+        """
+        Очищает строку от HTML кода
+
+        Args:
+            raw_html (str): Строка, которую нужно очистить
+
+        Returns:
+            str: Очищенная строка.
+        """
+        while raw_html.find('<') > -1:
+            index1 = raw_html.find('<')
+            index2 = raw_html.find('>')
+            raw_html = raw_html[:index1] + raw_html[index2 + 1:]
+        return raw_html if '\n' in raw_html else " ".join(result.split())
+```
+Однако эта реализация отработала примерно также как и прошлая:
+![image](https://user-images.githubusercontent.com/102030455/206182022-2a099910-10bb-4cc4-bd87-e7d073de961b.png)
+
+Поэтому я решила оставить прежнюю реализацию этого метода.
