@@ -106,3 +106,10 @@ def change_date(date_vac: str) -> str:
 ![image](https://user-images.githubusercontent.com/102030455/206182022-2a099910-10bb-4cc4-bd87-e7d073de961b.png)
 
 Поэтому я решила оставить прежнюю реализацию этого метода.
+
+### Задание 3.2.1
+
+В результате сформировались эти файлы.
+
+![image](https://user-images.githubusercontent.com/102030455/206720182-494b709f-d1d5-4472-90ee-f620c95661ae.png)
+
