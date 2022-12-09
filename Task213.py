@@ -1,4 +1,4 @@
-import csv, re, os, datetime
+import csv, re, os
 from typing import List, Dict, Tuple, Any
 from prettytable import PrettyTable, ALL
 from openpyxl.styles import Font, Border, Side, Alignment
@@ -16,6 +16,7 @@ class Report:
     """
     Класс для формирования отчётов и графиков.
     """
+
     def generate_excel(self, name_vac: str, statistic: List[Dict[str, str]]) -> None:
         """
         Генерирует Excel-таблицу.
@@ -138,6 +139,7 @@ class DataSet:
         vacancies_objects (List[Vacancy]): Сформированный список вакансий.
 
     """
+
     def __init__(self, file_name: str) -> None:
         """
         Инициализирует объект DataSet.
@@ -196,7 +198,7 @@ class DataSet:
 class Vacancy:
     """
     Класс для представления вакансии
-    
+
     Attributes:
         name (string): Название вакансии
         description (str): Описание вакансии
@@ -208,6 +210,7 @@ class Vacancy:
         area_name (str): Название города
         published_at (str): Дата публикации вакансии
     """
+
     def __init__(self, dict_vac: Dict[str, str]):
         """
         Инициализирует объект Vacancy, проверяя наличие некоторых полей для вакансии
@@ -238,6 +241,7 @@ class Salary:
         salary_currency (str): Валюта оклада
 
     """
+
     def __init__(self, salary_from, salary_to, salary_gross, salary_currency):
         """
         Инициализирует объект Salary
@@ -262,10 +266,15 @@ class Salary:
         Returns:
             float: Зарплата в рублях.
 
-        >>> Salary('10', '1000', 'true', 'EUR').to_RUB(1000.0)
-        59900.0
-        >>> Salary('10', '1000', 'true', 'RUR').to_RUB(1000)
-        1000.0
+        # >>> Salary('10', '1000', 'true', 'EUR').to_RUB(1000.0)
+        # 59900.0
+        # >>> Salary('10', '1000', 'true', 'RUR').to_RUB(1000)
+        # 1000.0
+        # >>> Salary('10', '1000', 'true', 'QWE').to_RUB(1000.0)
+        >>> Salary('10', '1000', 'false', 'EUR').to_RUB(559)
+        33484.1
+        >>> Salary('10', '1000', 'true', 'RUR').to_RUB(500)
+        500.0
         >>> Salary('10', '1000', 'true', 'QWE').to_RUB(1000.0)
         Traceback (most recent call last):
         ...
@@ -285,6 +294,7 @@ class InputConnect:
         interval (List[int]): Промежуток выводимых колонок
         columns (str or List[str]): Название выводимых колонок
     """
+
     def __init__(self, filter_param, sort_param, reversed_sort, interval, columns):
         """
         Инициализирует объект InputConnect
@@ -330,6 +340,7 @@ class InputConnect:
         Returns:
             List[Any]: Список отформатированных полей.
         """
+
         def change_salary(salary: Salary) -> str:
             """
             Форматирует зарплату к нужному формату.
@@ -349,18 +360,6 @@ class InputConnect:
             info_gross = 'Без вычета налогов' if translation[salary.salary_gross] == 'Да' else 'С вычетом налогов'
             result_salary = f'{salary_from} - {salary_to} ({translation[salary.salary_currency]}) ({info_gross})'
             return result_salary
-
-        def change_date(date_vac: str) -> str:
-            """
-            Форматирует дату публикации к нужному формату.
-
-            Args:
-                date_vac (str): Дата публикации.
-
-            Returns:
-                str: Отформатированная дата публикации.
-            """
-            return datetime.datetime.strptime(date_vac, '%Y-%m-%dT%H:%M:%S%z').strftime('%d.%m.%Y')
 
         return [vacancy.name, vacancy.description, '\n'.join(vacancy.key_skills), translation[vacancy.experience_id],
                 translation[vacancy.premium], vacancy.employer_name, change_salary(vacancy.salary), vacancy.area_name,
@@ -394,8 +393,7 @@ class InputConnect:
             list_vacancies = list(
                 filter(lambda vac: parameter[1] == translation[vac.salary.salary_currency], list_vacancies))
         elif parameter[0] == 'Дата публикации вакансии':
-            list_vacancies = list(filter(lambda vac: parameter[1] == datetime.datetime.strptime(vac.published_at,
-                                                '%Y-%m-%dT%H:%M:%S%z').strftime('%d.%m.%Y'), list_vacancies))
+            list_vacancies = list(filter(lambda vac: parameter[1] == change_date(vac.published_at), list_vacancies))
         else:
             list_vacancies = list(
                 filter(lambda vac: parameter[1] == vac.__getattribute__(reverse_translation[parameter[0]]),
@@ -421,7 +419,10 @@ class InputConnect:
                 key=lambda vac: vac.salary.to_RUB(float(vac.salary.salary_from) + float(vac.salary.salary_to)) / 2,
                 reverse=is_reverse)
         elif param == 'Дата публикации вакансии':
-            list_vacancies.sort(key=lambda vac: datetime.datetime.strptime(vac.published_at, '%Y-%m-%dT%H:%M:%S%z'),
+            # parse(vac.published_at).strftime('%Y-%m-%dT%H:%M:%S%z')
+            list_vacancies.sort(key=lambda vac: (vac.published_at[:4], vac.published_at[5:7], vac.published_at[8:10],
+                                                 vac.published_at[12:14], vac.published_at[15:17],
+                                                 vac.published_at[18:20]),
                                 reverse=is_reverse)
         elif param == 'Опыт работы':
             list_vacancies.sort(key=lambda vac: rang_experience_id[vac.experience_id], reverse=is_reverse)
@@ -437,12 +438,15 @@ class InputConnect:
             list_vacancies (List[Vacancy]): Список вакансий.
         """
         self.interval.append(len(list_vacancies) + 1)
-        list_vacancies = list_vacancies if len(self.filter_param) != 2 else self.data_filter(list_vacancies, self.filter_param)
+        list_vacancies = list_vacancies if len(self.filter_param) != 2 else self.data_filter(list_vacancies,
+                                                                                             self.filter_param)
         list_vacancies = list_vacancies if len(list_vacancies) != 0 else 'Ничего не найдено'
         if type(list_vacancies) is str:
             print(list_vacancies)
             return
-        list_vacancies = list_vacancies if len(self.sort_param) == 0 else self.data_sort(list_vacancies, self.sort_param, self.reversed_sort)
+        list_vacancies = list_vacancies if len(self.sort_param) == 0 else self.data_sort(list_vacancies,
+                                                                                         self.sort_param,
+                                                                                         self.reversed_sort)
         table_header = list(reverse_translation.keys())[:-1]
         table_header.insert(0, '№')
         vacans_table = PrettyTable(table_header)
@@ -455,7 +459,8 @@ class InputConnect:
         vacans_table.align = 'l'
         vacans_table.max_width = 20
         if len(self.interval) > 1 and len(self.columns) >= 2:
-            vacans_table = vacans_table.get_string(start=self.interval[0] - 1, end=self.interval[1] - 1, fields=self.columns)
+            vacans_table = vacans_table.get_string(start=self.interval[0] - 1, end=self.interval[1] - 1,
+                                                   fields=self.columns)
         elif len(self.interval) > 1:
             vacans_table = vacans_table.get_string(start=self.interval[0] - 1, end=self.interval[1] - 1)
         elif len(self.columns) >= 2:
@@ -477,10 +482,13 @@ def get_salary_level(list_vacancies: List[Vacancy], field: str, name_vacancy: st
     """
     result = {}
     for vac in list_vacancies:
-        result[vac.__getattribute__(field)] = [] if vac.__getattribute__(field) not in result.keys() else result[vac.__getattribute__(field)]
-    list_vacancies = list_vacancies if name_vacancy == '' else list(filter(lambda vac: name_vacancy in vac.name, list_vacancies))
+        result[vac.__getattribute__(field)] = [] if vac.__getattribute__(field) not in result.keys() else result[
+            vac.__getattribute__(field)]
+    list_vacancies = list_vacancies if name_vacancy == '' else list(
+        filter(lambda vac: name_vacancy in vac.name, list_vacancies))
     for vac in list_vacancies:
-        result[vac.__getattribute__(field)].append(vac.salary.to_RUB(float(vac.salary.salary_from) + float(vac.salary.salary_to)) / 2)
+        result[vac.__getattribute__(field)].append(
+            vac.salary.to_RUB(float(vac.salary.salary_from) + float(vac.salary.salary_to)) / 2)
     for key in result.keys():
         result[key] = 0 if len(result[key]) == 0 else int(sum(result[key]) // len(result[key]))
     return result
@@ -500,8 +508,10 @@ def get_count_vacancies(list_vacancies: List[Vacancy], field: str, name_vacancy:
     """
     result = {}
     for vac in list_vacancies:
-        result[vac.__getattribute__(field)] = 0 if vac.__getattribute__(field) not in result.keys() else result[vac.__getattribute__(field)]
-    list_vacancies = list_vacancies if name_vacancy == '' else list(filter(lambda vac: name_vacancy in vac.name, list_vacancies))
+        result[vac.__getattribute__(field)] = 0 if vac.__getattribute__(field) not in result.keys() else result[
+            vac.__getattribute__(field)]
+    list_vacancies = list_vacancies if name_vacancy == '' else list(
+        filter(lambda vac: name_vacancy in vac.name, list_vacancies))
     for vac in list_vacancies:
         result[vac.__getattribute__(field)] += 1
     if field == 'area_name':
@@ -571,7 +581,7 @@ rang_experience_id = {"noExperience": 0,
                       "moreThan6": 3}
 
 
-def change_data(date_vac) -> str:
+def change_date(date_vac: str) -> str:
     """
     Форматирует дату публикации к нужному формату.
 
@@ -581,7 +591,22 @@ def change_data(date_vac) -> str:
     Returns:
         str: Отформатированная дата публикации.
     """
-    return datetime.datetime.strptime(date_vac, '%Y-%m-%dT%H:%M:%S%z').strftime('%Y')
+    date = date_vac[:date_vac.find('T')].split('-')
+    return '.'.join(reversed(date))
+
+
+def get_year(date_vac) -> str:
+    """
+    Возвращает год от даты.
+
+    Args:
+        date_vac (str): Дата публикации.
+
+    Returns:
+        str: Год публикации.
+    """
+    print(date_vac)
+    return date_vac[:4]
 
 
 def exit_from_file(message: str):
@@ -597,7 +622,7 @@ def exit_from_file(message: str):
 
 def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = False, slice: int = 0) -> Dict[Any, Any]:
     """
-    Приводит статистику к нужному виду (чтобы года шли )
+    Приводит статистику к нужному виду (чтобы года шли по порядку)
 
     Args:
         result_list (Dict[Any, Any]): Словарь со статистикой
@@ -606,7 +631,7 @@ def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = F
         slice (int): Срез для статистики
 
     Returns:
-        Dict[Any, Any]:
+        Dict[Any, Any]: Преобразованный словарь со статистикой
     """
     slice = len(result_list) if slice == 0 else slice
     return dict(sorted(result_list, key=lambda x: x[index], reverse=is_reversed)[:slice])
@@ -622,13 +647,15 @@ if len(data.vacancies_objects) == 0:
 if type_output == 'Статистика':
     vacancy_name = input('Введите название профессии: ')
     for vac in data.vacancies_objects:
-        vac.published_at = change_data(vac.published_at)
+        vac.published_at = get_year(vac.published_at)
     dict_cities = {}
     for vac in data.vacancies_objects:
         if vac.area_name not in dict_cities.keys():
             dict_cities[vac.area_name] = 0
         dict_cities[vac.area_name] += 1
-    needed_vacancies_objects = list(filter(lambda vac: int(len(data.vacancies_objects) * 0.01) <= dict_cities[vac.area_name], data.vacancies_objects))
+    needed_vacancies_objects = list(
+        filter(lambda vac: int(len(data.vacancies_objects) * 0.01) <= dict_cities[vac.area_name],
+               data.vacancies_objects))
     rp = Report()
     list_statistic = [get_statistic(get_salary_level(data.vacancies_objects, 'published_at').items(), 0),
                       get_statistic(get_salary_level(data.vacancies_objects, 'published_at', vacancy_name).items(), 0),
