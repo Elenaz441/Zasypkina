@@ -2,3 +2,4 @@
 /venv
 /*.csv
 /__pycache__
+/csv_files/*.csv
