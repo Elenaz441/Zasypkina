@@ -494,13 +494,14 @@ def get_salary_level(list_vacancies: List[Vacancy], field: str, name_vacancy: st
     return result
 
 
-def get_count_vacancies(list_vacancies: List[Vacancy], field: str, name_vacancy: str = '') -> Dict[str, str]:
+def get_count_vacancies(list_vacancies: List[Vacancy], field: str, data: DataSet, name_vacancy: str = '') -> Dict[str, str]:
     """
     Формирует статистики, связанные с количеством вакансий
 
     Args:
         list_vacancies (List[Vacancy]): Список вакансий
         field (str): Поле вакансии
+        data(DataSet): Данные из файла
         name_vacancy (str): Название вакансии (если его ввели)
 
     Returns:
@@ -605,7 +606,6 @@ def get_year(date_vac) -> str:
     Returns:
         str: Год публикации.
     """
-    print(date_vac)
     return date_vac[:4]
 
 
@@ -620,9 +620,9 @@ def exit_from_file(message: str):
     exit()
 
 
-def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = False, slice: int = 0) -> Dict[Any, Any]:
+def print_statistic(result_list, index, message, is_reversed=False, slice=0):
     """
-    Приводит статистику к нужному виду (чтобы года шли по порядку)
+    Приводит статистику к нужному виду (чтобы года шли по порядку) и печатает её
 
     Args:
         result_list (Dict[Any, Any]): Словарь со статистикой
@@ -634,44 +634,69 @@ def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = F
         Dict[Any, Any]: Преобразованный словарь со статистикой
     """
     slice = len(result_list) if slice == 0 else slice
-    return dict(sorted(result_list, key=lambda x: x[index], reverse=is_reversed)[:slice])
+    statistic = dict(sorted(result_list, key=lambda x: x[index], reverse=is_reversed)[:slice])
+    print(message + str(statistic))
+    return statistic
 
 
-type_output = input('Введите данные для печати: ')
-file_name = input('Введите название файла: ')
-if os.stat(file_name).st_size == 0:
-    exit_from_file('Пустой файл')
-data = DataSet(file_name)
-if len(data.vacancies_objects) == 0:
-    exit_from_file('Нет данных')
-if type_output == 'Статистика':
-    vacancy_name = input('Введите название профессии: ')
-    for vac in data.vacancies_objects:
-        vac.published_at = get_year(vac.published_at)
-    dict_cities = {}
-    for vac in data.vacancies_objects:
-        if vac.area_name not in dict_cities.keys():
-            dict_cities[vac.area_name] = 0
-        dict_cities[vac.area_name] += 1
-    needed_vacancies_objects = list(
-        filter(lambda vac: int(len(data.vacancies_objects) * 0.01) <= dict_cities[vac.area_name],
-               data.vacancies_objects))
-    rp = Report()
-    list_statistic = [get_statistic(get_salary_level(data.vacancies_objects, 'published_at').items(), 0),
-                      get_statistic(get_salary_level(data.vacancies_objects, 'published_at', vacancy_name).items(), 0),
-                      get_statistic(get_count_vacancies(data.vacancies_objects, 'published_at').items(), 0),
-                      get_statistic(get_count_vacancies(data.vacancies_objects, 'published_at', vacancy_name).items(), 0),
-                      get_statistic(get_salary_level(needed_vacancies_objects, 'area_name').items(), 1, True, 10),
-                      get_statistic(get_count_vacancies(needed_vacancies_objects, 'area_name').items(), 1, True, 10)]
-    rp.generate_excel(vacancy_name, list_statistic)
-    rp.generate_image(vacancy_name, list_statistic)
-    rp.generate_pdf(vacancy_name)
-elif type_output == 'Вакансии':
-    parameter = input('Введите параметр фильтрации: ')
-    sorting_param = input('Введите параметр сортировки: ')
-    is_reversed_sort = input('Обратный порядок сортировки (Да / Нет): ')
-    interval = list(map(int, input('Введите диапазон вывода: ').split()))
-    columns = input('Введите требуемые столбцы: ')
-    outer = InputConnect(parameter, sorting_param, is_reversed_sort, interval, columns)
-    outer.check_parameters()
-    outer.print_vacancies(data.vacancies_objects)
+# def get_statistic(result_list: Dict[Any, Any], index: int, is_reversed: bool = False, slice: int = 0) -> Dict[Any, Any]:
+#     """
+#     Приводит статистику к нужному виду (чтобы года шли по порядку)
+#
+#     Args:
+#         result_list (Dict[Any, Any]): Словарь со статистикой
+#         index (int): Индекс
+#         is_reversed (bool): Отвечает за обратную сортировку
+#         slice (int): Срез для статистики
+#
+#     Returns:
+#         Dict[Any, Any]: Преобразованный словарь со статистикой
+#     """
+#     slice = len(result_list) if slice == 0 else slice
+#     return dict(sorted(result_list, key=lambda x: x[index], reverse=is_reversed)[:slice])
+
+if __name__ == '__main__':
+    type_output = input('Введите данные для печати: ')
+    file_name = input('Введите название файла: ')
+    if os.stat(file_name).st_size == 0:
+        exit_from_file('Пустой файл')
+    data = DataSet(file_name)
+    if len(data.vacancies_objects) == 0:
+        exit_from_file('Нет данных')
+    if type_output == 'Статистика':
+        vacancy_name = input('Введите название профессии: ')
+        for vac in data.vacancies_objects:
+            vac.published_at = get_year(vac.published_at)
+        dict_cities = {}
+        for vac in data.vacancies_objects:
+            if vac.area_name not in dict_cities.keys():
+                dict_cities[vac.area_name] = 0
+            dict_cities[vac.area_name] += 1
+        needed_vacancies_objects = list(
+            filter(lambda vac: int(len(data.vacancies_objects) * 0.01) <= dict_cities[vac.area_name],
+                   data.vacancies_objects))
+        rp = Report()
+        list_statistic = [print_statistic(get_salary_level(data.vacancies_objects, 'published_at').items(), 0,
+                    'Динамика уровня зарплат по годам: '),
+                        print_statistic(get_salary_level(data.vacancies_objects, 'published_at', vacancy_name).items(), 0,
+                    'Динамика уровня зарплат по годам для выбранной профессии: '),
+                        print_statistic(get_count_vacancies(data.vacancies_objects, "published_at", data).items(), 0,
+                    'Динамика количества вакансий по годам: '),
+                        print_statistic(get_count_vacancies(data.vacancies_objects, 'published_at', data, vacancy_name).items(), 0,
+                    'Динамика количества вакансий по годам для выбранной профессии: '),
+                        print_statistic(get_salary_level(needed_vacancies_objects, 'area_name').items(), 1,
+                    'Уровень зарплат по городам (в порядке убывания): ', True, 10),
+                        print_statistic(get_count_vacancies(needed_vacancies_objects, 'area_name', data).items(), 1,
+                    'Доля вакансий по городам (в порядке убывания): ', True, 10)]
+        rp.generate_excel(vacancy_name, list_statistic)
+        rp.generate_image(vacancy_name, list_statistic)
+        rp.generate_pdf(vacancy_name)
+    elif type_output == 'Вакансии':
+        parameter = input('Введите параметр фильтрации: ')
+        sorting_param = input('Введите параметр сортировки: ')
+        is_reversed_sort = input('Обратный порядок сортировки (Да / Нет): ')
+        interval = list(map(int, input('Введите диапазон вывода: ').split()))
+        columns = input('Введите требуемые столбцы: ')
+        outer = InputConnect(parameter, sorting_param, is_reversed_sort, interval, columns)
+        outer.check_parameters()
+        outer.print_vacancies(data.vacancies_objects)
