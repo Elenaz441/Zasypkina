@@ -120,4 +120,4 @@ def change_date(date_vac: str) -> str:
 Время работы файла с многопоточностью:
 ![image](https://user-images.githubusercontent.com/102030455/206901276-bb97e2c0-b93b-4daf-87d0-ead70ad2aa8d.png)
 
-
+Видно, что файл с многопоточностью работает быстрее примерно на 10 секунд.
