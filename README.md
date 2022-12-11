@@ -113,3 +113,11 @@ def change_date(date_vac: str) -> str:
 
 ![image](https://user-images.githubusercontent.com/102030455/206720182-494b709f-d1d5-4472-90ee-f620c95661ae.png)
 
+### Задание 3.2.2
+ Время работы файла без многополочночти:
+ ![image](https://user-images.githubusercontent.com/102030455/206901250-0e3dfdf6-27e8-4911-ab31-50bc2dea451f.png)
+
+Время работы файла с многопоточностью:
+![image](https://user-images.githubusercontent.com/102030455/206901276-bb97e2c0-b93b-4daf-87d0-ead70ad2aa8d.png)
+
+
