@@ -17,11 +17,9 @@ def get_statistic_by_year(file, vacancy, statistics):
     return statistics
 
 
-if __name__ == '__main__':
-    file = input('Введите название файла: ')
-    vacancy = input('Введите название вакансии: ')
+def get_stat_by_year(file, vacancy):
     df = pd.read_csv(file)
-    df['years'] = df['published_at'].apply(lambda s: datetime.strptime(s, '%Y-%m-%dT%H:%M:%S%z').year)
+    df['years'] = df['published_at'].apply(lambda s: s[:4])
     years = df['years'].unique()
     salary_by_years = {year: [] for year in years}
     vac_salary_by_years = {year: [] for year in years}
@@ -39,20 +37,8 @@ if __name__ == '__main__':
     vac_salary_by_years = {stat[1][0]: stat[1][1] for stat in output}
     count_by_years = {stat[2][0]: stat[2][1] for stat in output}
     vac_count_by_years = {stat[3][0]: stat[3][1] for stat in output}
-    print('Динамика уровня зарплат по годам:', salary_by_years)
-    print('Динамика уровня зарплат по годам для выбранной профессии:', vac_salary_by_years)
-    print('Динамика количества вакансий по годам:', count_by_years)
-    print('Динамика количества вакансий по годам для выбранной профессии:', vac_count_by_years)
-    data = DataSet(file)
-    dict_cities = {}
-    for vac in data.vacancies_objects:
-        if vac.area_name not in dict_cities.keys():
-            dict_cities[vac.area_name] = 0
-        dict_cities[vac.area_name] += 1
-    needed_vacancies_objects = list(
-        filter(lambda vac: int(len(data.vacancies_objects) * 0.01) <= dict_cities[vac.area_name],
-               data.vacancies_objects))
-    print_statistic(get_salary_level(needed_vacancies_objects, 'area_name').items(), 1,
-                    'Уровень зарплат по городам (в порядке убывания): ', True, 10)
-    print_statistic(get_count_vacancies(needed_vacancies_objects, 'area_name', data).items(), 1,
-                    'Доля вакансий по городам (в порядке убывания): ', True, 10)
+    return [salary_by_years, vac_salary_by_years, count_by_years, vac_count_by_years]
+    # print('Динамика уровня зарплат по годам:', salary_by_years)
+    # print('Динамика уровня зарплат по годам для выбранной профессии:', vac_salary_by_years)
+    # print('Динамика количества вакансий по годам:', count_by_years)
+    # print('Динамика количества вакансий по годам для выбранной профессии:', vac_count_by_years)
