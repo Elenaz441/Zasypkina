@@ -128,3 +128,6 @@ def change_date(date_vac: str) -> str:
 
 Время работы файла с Concurrent futures:
 Если сравнивать с multiprocessing, то Concurrent futures работает медленнее
+
+### Задание 3.3.1
+![1](https://user-images.githubusercontent.com/102030455/208485010-c7fde94e-af49-4630-8b37-c632a9018042.jpg)
