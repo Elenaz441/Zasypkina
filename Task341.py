@@ -1,11 +1,8 @@
 import pandas as pd
 import math
 
-file = 'vacancies_dif_currencies.csv'
-df = pd.read_csv(file)
-df.insert(1, 'salary', None)
-df_currencies = pd.read_csv('data_currencies.csv')
-for row in df.itertuples():
+
+def normalise_row(row):
     salary_from = row.salary_from
     salary_to = row.salary_to
     salary_currency = row.salary_currency
@@ -24,8 +21,15 @@ for row in df.itertuples():
             salary = None if math.isnan(ratio_currency) else salary * ratio_currency
         elif salary_currency != 'RUR':
             salary = None
-        df.at[df.index[int(row.Index)], 'salary'] = salary
-    print(df.index[int(row.Index)])
+    return salary
+
+
+pd.set_option('expand_frame_repr', False)
+file = 'vacancies_dif_currencies.csv'
+df = pd.read_csv(file)
+df.insert(1, 'salary', None)
+df_currencies = pd.read_csv('data_currencies.csv')
+df['salary'] = df.apply(lambda row: normalise_row(row), axis=1)
 df.pop('salary_from')
 df.pop('salary_to')
 df.pop('salary_currency')
