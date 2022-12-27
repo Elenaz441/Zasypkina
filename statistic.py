@@ -100,7 +100,7 @@ class Report:
         name_labels = ['Другие'] + list(statistic[5].keys())
         city_percent = [1 - sum(list(statistic[5].values()))] + list(statistic[5].values())
         picture4.set_title('Доля вакансий по городам')
-        picture4.pie(city_percent, labels=name_labels, radius=1.32, textprops={'fontsize': 6})
+        picture4.pie(city_percent, labels=name_labels, radius=1.25, textprops={'fontsize': 6})
 
         fig.tight_layout()
         plt.savefig('graph.png')

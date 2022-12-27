@@ -26,11 +26,11 @@ def normalise_row(row):
 
 pd.set_option('expand_frame_repr', False)
 file = 'vacancies_dif_currencies.csv'
-df = pd.read_csv(file)
+df = pd.read_csv(file, nrows=100)
 df.insert(1, 'salary', None)
 df_currencies = pd.read_csv('data_currencies.csv')
 df['salary'] = df.apply(lambda row: normalise_row(row), axis=1)
 df.pop('salary_from')
 df.pop('salary_to')
 df.pop('salary_currency')
-df.to_csv('vacancies_result.csv', index=False)
+df.to_csv('vacancies_result_100.csv', index=False)
