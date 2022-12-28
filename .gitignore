@@ -5,3 +5,4 @@
 /csv_files/*.csv
 /async
 /async_stats.txt
+#/project_vacancy.db

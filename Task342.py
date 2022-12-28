@@ -1,12 +1,23 @@
 from multiprocessing import Pool
-
+from typing import List, Dict, Tuple, Any
 import pandas as pd
 from functools import partial
 from statistic import Report, get_salary_level, get_count_vacancies, get_statistic
 from main import DataSet, get_year
 
 
-def get_statistic_by_year(file, vacancy, statistics):
+def get_statistic_by_year(file: str, vacancy: str, statistics: List[Dict[int, Any]]) -> List[Dict[int, Any]]:
+    """
+    Преобразовывает статистики для конкретного года
+
+    Args:
+        file (str): Название файла
+        vacancy (str): Название вакансии
+        statistics (List[Dict[int, Any]]): Список статистик по годам
+
+    Returns:
+        List[Dict[int, Any]]: Список статистик по годам.
+    """
     df = pd.read_csv(file)
     df['salary'] = df[['salary_from', 'salary_to']].mean(axis=1)
     year = int(file[15:19])
@@ -17,7 +28,17 @@ def get_statistic_by_year(file, vacancy, statistics):
     return statistics
 
 
-def get_stat_by_year(file, vacancy):
+def get_stat_by_years(file, vacancy):
+    """
+    Возвращает статистики по годам
+
+    Args:
+        file (str): Название файла
+        vacancy (str): Название вакансии
+
+    Returns:
+        List[Dict[int, Any]]: Список статистик по годам.
+    """
     df = pd.read_csv(file)
     df['years'] = df['published_at'].apply(lambda s: s[:4])
     years = df['years'].unique()
@@ -43,7 +64,7 @@ def get_stat_by_year(file, vacancy):
 if __name__ == '__main__':
     file_name = input('Введите название файла: ')
     vacancy_name = input('Введите название профессии: ')
-    statistic = get_stat_by_year(file_name, vacancy_name)
+    statistic = get_stat_by_years(file_name, vacancy_name)
     data = DataSet(file_name)
     for vac in data.vacancies_objects:
         vac.published_at = get_year(vac.published_at)

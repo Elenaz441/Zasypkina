@@ -132,11 +132,20 @@ def change_date(date_vac: str) -> str:
 ### Задание 3.3.1
 Частотность с которой встречаются различные валюты, за 2003 – 2022 гг.
 ![1](https://user-images.githubusercontent.com/102030455/208485010-c7fde94e-af49-4630-8b37-c632a9018042.jpg)
+
 ### Задание 3.3.2
 Сформировала csv-файл с первыми 100 строками (отображение через MS Excel):
 ![image](https://user-images.githubusercontent.com/102030455/208904890-65d432ae-7263-4c07-acb5-3aa72db7a8a6.png)
 ![image](https://user-images.githubusercontent.com/102030455/208905083-331f5503-d876-4a73-95ff-6f278239b267.png)
 ![image](https://user-images.githubusercontent.com/102030455/208905126-9c7af352-ac1f-40d3-80f8-a8484abc9c5e.png)
 ![image](https://user-images.githubusercontent.com/102030455/208905166-4cc3ed31-2ecf-4a7d-9d06-5bda7dc9f8af.png)
+
+### Задание 3.5.1
+Создана база данных, в которой сформирована таблица валют из csv-файла:
+![image](https://user-images.githubusercontent.com/102030455/209675225-352b80dd-7c77-46cb-9fb2-8fd41c160a0f.png)
+
+### Задание 3.5.2
+Создала таблицу в базе данных с вакансиями
+![image](https://user-images.githubusercontent.com/102030455/209799445-811ef406-2859-45d5-860c-0edea838dc7d.png)
 
 
