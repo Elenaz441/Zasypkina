@@ -148,4 +148,19 @@ def change_date(date_vac: str) -> str:
 Создала таблицу в базе данных с вакансиями
 ![image](https://user-images.githubusercontent.com/102030455/209799445-811ef406-2859-45d5-860c-0edea838dc7d.png)
 
+### Задание 3.5.3
+Фото с базой данных 
+![1](https://user-images.githubusercontent.com/102030455/209838521-822ba76b-b67c-4289-a322-fc6bb72349c8.jpg)
 
+Фото с результатом выводов
+![2](https://user-images.githubusercontent.com/102030455/209838612-5f5c196c-09e9-4f8c-a219-ddb87b3e1b8d.jpg)
+
+![3](https://user-images.githubusercontent.com/102030455/209838622-44aa0f38-e678-41bb-9b1f-c6a2c772167e.jpg)
+
+![4](https://user-images.githubusercontent.com/102030455/209838636-8b310121-bce8-42dd-9ae4-595bbb4f7514.jpg)
+
+![5](https://user-images.githubusercontent.com/102030455/209838655-dcaa4397-ead8-48c1-95f2-76758036d942.jpg)
+
+![6](https://user-images.githubusercontent.com/102030455/209838665-522c1b01-e68a-42d2-bbce-efeff0e4a50f.jpg)
+
+![7](https://user-images.githubusercontent.com/102030455/209838676-3418c94e-4522-43a2-ad41-2936e3a469c1.jpg)
