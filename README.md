@@ -144,5 +144,8 @@ def change_date(date_vac: str) -> str:
 Создана база данных, в которой сформирована таблица валют из csv-файла:
 ![image](https://user-images.githubusercontent.com/102030455/209675225-352b80dd-7c77-46cb-9fb2-8fd41c160a0f.png)
 
+### Задание 3.5.2
+Создала таблицу в базе данных с вакансиями
+![image](https://user-images.githubusercontent.com/102030455/209799445-811ef406-2859-45d5-860c-0edea838dc7d.png)
 
 
